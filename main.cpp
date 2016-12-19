@@ -83,6 +83,8 @@
 
 #include "NES.h"
 
+constexpr int AUDIO_FRAME_BUFFER_SIZE = 1024;
+
 // NES generates 256 x 240 pixels.
 // You are free to resize at runtime
 // but you can also set a scale factor to init with.
@@ -221,7 +223,7 @@ int main(int argc, char* argv[]) {
 		nullptr,
 		&outputParameters,
 		44100,
-		512,
+		AUDIO_FRAME_BUFFER_SIZE,
 		paNoFlag,
 		nullptr,
 		nullptr);
