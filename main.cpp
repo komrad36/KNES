@@ -294,7 +294,7 @@ int main(int argc, char* argv[]) {
 
 	// decrease pops on linux
 #ifdef __linux__
-	PaAlsa_EnableRealtimeScheduling(stream, 1);
+	PaAlsa_EnableRealtimeScheduling(nes->apu->stream, 1);
 #endif
 
 	std::cout << "Starting audio stream..." << std::endl;
