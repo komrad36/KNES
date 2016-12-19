@@ -653,10 +653,10 @@ void tickAPU(NES* nes, APU* apu) {
 		const uint8_t dOut = apu->dmc.value;
 
 		// combined outputs
-		const float output = tnd_tbl[(3 * tri_output) + (2 * noise_out) + dOut] + pulse_tbl[p1_output + p2_output];
+		float output[2];
+		output[1] = output[0] = tnd_tbl[(3 * tri_output) + (2 * noise_out) + dOut] + pulse_tbl[p1_output + p2_output];
 
-		// send sample to ring buffer for consumption by PortAudio callback
-		PaUtil_WriteRingBuffer(&apu->ring_buf, &output, 1);
+		if (Pa_GetStreamWriteAvailable(apu->stream)) Pa_WriteStream(apu->stream, output, 1);
 	}
 }
 

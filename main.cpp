@@ -97,23 +97,6 @@ constexpr bool fullscreen = false;
 // Recommend off unless severe tearing.
 constexpr bool v_sync = false;
 
-// PortAudio callback
-// writes out contents of non-blocking ring buffer filled by APU
-// writes 0 in case of underrun.
-static int paCallback(const void *in_buf, void *out_buf, unsigned long frames_per_buf, const PaStreamCallbackTimeInfo* time_info, PaStreamCallbackFlags status_flags, void *user_data) {
-	static_cast<void>(in_buf);
-	static_cast<void>(time_info);
-	static_cast<void>(status_flags);
-
-	PaUtilRingBuffer *data = reinterpret_cast<PaUtilRingBuffer*>(user_data);
-	const unsigned long num_out = frames_per_buf << 1;
-	const unsigned long num_avail = static_cast<unsigned long>(PaUtil_GetRingBufferReadAvailable(data));
-	PaUtil_ReadRingBuffer(data, out_buf, num_avail > num_out ? num_out : num_avail);
-	if (num_avail < num_out) memset(reinterpret_cast<float*>(out_buf) + num_avail, 0, sizeof(float) * (num_out - num_avail));
-	
-	return paContinue;
-}
-
 bool getKey(GLFWwindow* window, int key) {
 	return glfwGetKey(window, key) == GLFW_PRESS;
 }
@@ -230,19 +213,18 @@ int main(int argc, char* argv[]) {
 	outputParameters.channelCount = 2;
 	outputParameters.sampleFormat = paFloat32;
 	outputParameters.suggestedLatency = Pa_GetDeviceInfo(outputParameters.device)->defaultLowOutputLatency;
-	outputParameters.hostApiSpecificStreamInfo = NULL;
+	outputParameters.hostApiSpecificStreamInfo = nullptr;
 
 	std::cout << "Opening audio stream..." << std::endl;
-	PaStream *stream;
 	err = Pa_OpenStream(
-		&stream,
-		NULL,
+		&nes->apu->stream,
+		nullptr,
 		&outputParameters,
 		44100,
-		256,
+		512,
 		paNoFlag,
-		paCallback,
-		&nes->apu->ring_buf);
+		nullptr,
+		nullptr);
 
 	if (err != paNoError) {
 		notifyPaError(err);
@@ -316,7 +298,7 @@ int main(int argc, char* argv[]) {
 #endif
 
 	std::cout << "Starting audio stream..." << std::endl;
-	Pa_StartStream(stream);
+	Pa_StartStream(nes->apu->stream);
 	if (err != paNoError) {
 		notifyPaError(err);
 		return EXIT_FAILURE;
@@ -382,10 +364,10 @@ int main(int argc, char* argv[]) {
 	}
 
 	std::cout << std::endl << "Stopping audio stream..." << std::endl;
-	Pa_StopStream(stream);
+	Pa_StopStream(nes->apu->stream);
 
 	std::cout << "Closing audio stream..." << std::endl;
-	Pa_CloseStream(stream);
+	Pa_CloseStream(nes->apu->stream);
 
 	std::cout << "Terminating GLFW..." << std::endl;
 	glfwTerminate();

@@ -81,12 +81,12 @@
 #include <cstring>
 #include <iostream>
 
-#include "pa_ringbuffer.h"
+#include <portaudio.h>
 
 constexpr int INES_MAGIC = 0x1a53454e;
 constexpr double CPU_FREQ = 1789773.0;
 constexpr double FRAME_CTR_FREQ = CPU_FREQ / 240.0;
-constexpr double SAMPLE_RATE = CPU_FREQ / (44100.0 * 2.0);
+constexpr double SAMPLE_RATE = CPU_FREQ / (44100.0);
 
 enum Buttons {
 	ButtonA = 0,
@@ -220,7 +220,7 @@ struct Noise {
 };
 
 struct APU {
-	PaUtilRingBuffer ring_buf; // ring buffer for communicating to PortAudio with low latency
+	PaStream* stream;
 	Pulse pulse1;
 	Pulse pulse2;
 	Triangle triangle;
@@ -231,12 +231,7 @@ struct APU {
 	uint8_t frame_val;
 	bool frame_IRQ;
 
-	APU() : cycle(0), frame_period(0), frame_val(0), frame_IRQ(false) {
-		void* ring_buf_storage = malloc(sizeof(float) << 13);
-		if (ring_buf_storage != nullptr) {
-			PaUtil_InitializeRingBuffer(&ring_buf, sizeof(float), 8192, ring_buf_storage);
-		}
-	}
+	APU() : cycle(0), frame_period(0), frame_val(0), frame_IRQ(false) {}
 };
 
 struct Cartridge {
