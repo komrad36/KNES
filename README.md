@@ -26,8 +26,10 @@ or you will enter dependency hell at link-time.
 Fully cross-platform. Tested on Windows (MSVC) and Linux (g++).
 Makefile provided for the latter case.
 
-Fully playable, with CPU, APU, PPU emulated and 6 of the most common
-mappers supported (0, 1, 2, 3, 4, 7). Get a .nes v1 file and go!
+Fully playable, with sound! Full CPU, APU, PPU emulation.
+
+6 of the most common mappers are supported (0, 1, 2, 3, 4, 7), covering roughly
+80-90% of all NES games. Get a .nes v1 file and go!
 
 Written from scratch in a speedcoding challenge (72 hours!). This means
 the code is NOT terribly clean. Always loved the 6502 and wanted to try
