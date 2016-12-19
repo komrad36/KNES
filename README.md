@@ -23,7 +23,8 @@ If you compile GLFW yourself, be sure to specify
 shared build ('cmake -DBUILD_SHARED_LIBS=ON .')
 or you will enter dependency hell at link-time.
 
-Fully cross-platform. Tested on Windows and Linux.
+Fully cross-platform. Tested on Windows (MSVC) and Linux (g++).
+Makefile provided for the latter case.
 
 Fully playable, with CPU, APU, PPU emulated and 6 of the most common
 mappers supported (0, 1, 2, 3, 4, 7). Get a .nes v1 file and go!
