@@ -189,6 +189,7 @@ int main(int argc, char* argv[]) {
 
 	std::cout << "Initializing NES..." << std::endl;
 	NES* nes = new NES(argv[1], SRAM_path);
+	if (!nes->initialized) return EXIT_FAILURE;
 
 	std::cout << "Initializing PortAudio..." << std::endl;
 	PaError err = Pa_Initialize();

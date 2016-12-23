@@ -235,6 +235,7 @@ struct APU {
 };
 
 struct Cartridge {
+	bool initialized;
 	uint8_t* PRG; // PRG-ROM banks
 	int prg_size;
 	uint8_t* CHR; // CHR-ROM banks
@@ -246,7 +247,7 @@ struct Cartridge {
 	uint8_t mirror; // mirroring mode
 	uint8_t battery_present; // battery present
 
-	Cartridge(const char* path, const char* SRAM_path) {
+	Cartridge(const char* path, const char* SRAM_path) : initialized(false) {
 		FILE* fp = fopen(path, "rb");
 		if (fp == nullptr) {
 			std::cerr << "ERROR: failed to open ROM file!" << std::endl;
@@ -325,6 +326,7 @@ struct Cartridge {
 				fclose(fp);
 			}
 		}
+		initialized = true;
 	}
 };
 
@@ -782,6 +784,7 @@ struct Mapper7 : public Mapper {
 };
 
 struct NES {
+	bool initialized;
 	CPU* cpu;
 	APU* apu;
 	PPU* ppu;

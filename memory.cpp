@@ -477,9 +477,10 @@ void Mapper4::updateOffsets(Cartridge* cartridge) {
 	}
 }
 
-NES::NES(const char* path, const char* SRAM_path) {
+NES::NES(const char* path, const char* SRAM_path) : initialized(false) {
 	std::cout << "Initializing cartridge..." << std::endl;
 	cartridge = new Cartridge(path, SRAM_path);
+	if (!cartridge->initialized) return;
 
 	std::cout << "Initializing controllers..." << std::endl;
 	controller1 = new Controller;
@@ -519,7 +520,7 @@ NES::NES(const char* path, const char* SRAM_path) {
 		mapper = new Mapper7();
 	}
 	else {
-		std::cerr << "ERROR: cartridge uses Mapper " << cartridge->mapper << ", which isn't currently supported by KNES!" << std::endl;
+		std::cerr << "ERROR: cartridge uses Mapper " << static_cast<int>(cartridge->mapper) << ", which isn't currently supported by KNES!" << std::endl;
 		return;
 	}
 
@@ -549,6 +550,7 @@ NES::NES(const char* path, const char* SRAM_path) {
 	writePPUCtrl(ppu, 0);
 	writePPUMask(ppu, 0);
 	ppu->oam_addr = 0;
+	initialized = true;
 }
 
 uint16_t mirrorAddress(uint8_t mode, uint16_t address) {
